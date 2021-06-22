@@ -100,7 +100,10 @@ function App() {
     request.onreadystatechange = () => {
       if (request.readyState === XMLHttpRequest.DONE) {
         const eventList = JSON.parse(request.response)
-        setEvents(eventList.map((value, index) => {value['eventIndex'] = index + 1; return value}))
+        setEvents(eventList.map((value, index) => {value['eventIndex'] = index + 1; return value}));
+        setShowEventLog(false);
+        setCurrentEvent(undefined);
+
       }
     }
     request.send()
@@ -120,6 +123,10 @@ function App() {
       setConveyoTargetEvents(
         events.filter((value) => CONVEYO_TARGET_EVENTS.includes(value.meta.event))
       )
+    } else {
+      setOriginConveyoEvents([]);
+      setConveyoTargetEvents([]);
+      setOrderSendEvent(undefined);
     }
   }, [events])
 
@@ -142,7 +149,7 @@ function App() {
             <label>Env</label>
             <input title="env" onChange={(e) => setEnv(e.target.value)} value={env} />
             <button onClick={getHubyoData}>Send Request</button>
-            <button onClick={() => setShowEventLog(!showEventLog)}>Show Message Log</button>
+            <button onClick={() => currentEvent ? setShowEventLog(!showEventLog) : null}>Show Message Log</button>
           </div>
         </div>
         {events ? 
