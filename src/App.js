@@ -49,6 +49,7 @@ const STATUS_UPDATE_EVENTS = [
   'yogiyo_dowant_opa_order_callback_send',
   'yogiyo_dowant_relayo_order_callback_send',
   'yogiyo_dowant_sms_order_callback_send',
+  'order_status_updated'
 ]
 
 function getTitle(event) {
