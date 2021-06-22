@@ -126,15 +126,23 @@ function App() {
     <div className="App">
       <div className="rootContainer">
         <div>
-          <div>{`https://${env}.yogiyo.co.kr/list?platform=${platform}&entity=order&tracking_id=${trackingId}`}</div>
-          <label>Platform</label>
-          <input title="platform" onChange={(e) => setPlatform(e.target.value)} value={platform} />
-          <label>Tracking ID</label>
-          <input title="trackingId" onChange={(e) => setTrackingId(e.target.value)} value={trackingId} />
-          <label>Env</label>
-          <input title="env" onChange={(e) => setEnv(e.target.value)} value={env} />
-          <button onClick={getHubyoData}>Send Request</button>
-          <button onClick={() => setShowEventLog(!showEventLog)}>Show Message Log</button>
+          <div className="hubyoUrlDisplay">
+            https://<span className="hubyoUrlBold">{env}</span>
+            {`.yogiyo.co.kr/list?platform=`}
+            <span className="hubyoUrlBold">{platform}</span>
+            {`&entity=order&tracking_id=`}
+            <span className="hubyoUrlBold">{trackingId}</span>
+          </div>
+          <div className="inputWrapper">
+            <label>Platform</label>
+            <input title="platform" onChange={(e) => setPlatform(e.target.value)} value={platform} />
+            <label>Tracking ID</label>
+            <input title="trackingId" onChange={(e) => setTrackingId(e.target.value)} value={trackingId} />
+            <label>Env</label>
+            <input title="env" onChange={(e) => setEnv(e.target.value)} value={env} />
+            <button onClick={getHubyoData}>Send Request</button>
+            <button onClick={() => setShowEventLog(!showEventLog)}>Show Message Log</button>
+          </div>
         </div>
         {events ? 
           <div className="componentsDisplay"> 

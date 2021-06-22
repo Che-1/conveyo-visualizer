@@ -12,6 +12,14 @@
   flex-direction: column;
 }
 
+.hubyoUrlBold {
+  font-weight: 900;
+}
+
+.inputWrapper {
+  margin: 15px;
+}
+
 .componentsDisplay {
   width: 100%;
   height: 65%;
