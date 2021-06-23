@@ -22,7 +22,9 @@ const EVENT_DIRECTION = {
   orderyo_rider_status_callback: "Left",
   conveyo_opa_order_cancel: "Right",
   orderyo_order_timeout: "Left",
-  order_status_updated: "Left"
+  order_status_updated: "Left",
+  orderyo_backend_process: "Left",
+  conveyo_opa_timeout_alarm_receive: "Left"
 }
 
 const ORIGIN_CONVEYO_EVENTS = [
@@ -35,7 +37,8 @@ const ORIGIN_CONVEYO_EVENTS = [
   "orderyo_alarm_receive",
   "conveyo_opa_order_cancel",
   "orderyo_order_timeout",
-  "order_status_updated"
+  "order_status_updated",
+  "conveyo_opa_timeout_alarm_receive"
 ]
 
 const CONVEYO_TARGET_EVENTS = [
@@ -63,6 +66,8 @@ function getTitle(event) {
     title = `${event.meta.event}:\n${event.transmission_data ? event.transmission_data.data.event : event.target_response.status}`
   } else if (event.meta.event === "orderyo_rider_status_callback") {
     title = event.target_response.event
+  } else if (event.meta.event === "orderyo_backend_process" && event.type === "transmission") {
+    title = event.message
   } else {
     title =  event.meta.event
   }
@@ -83,6 +88,14 @@ function Arrow({ selected, event, handleClick }) {
   )
 }
 
+function AlimTalk({ selected, event, handleClick }) {
+  return (
+    <div className={`alimTalkProcess ${selected ? "selected" : null}`} onClick={handleClick}>
+      {event.eventIndex}: {event.meta.event} {event.type}
+    </div>
+  )
+}
+
 function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [events, setEvents] = useState()
@@ -90,6 +103,7 @@ function App() {
 
   const [originConveyoEvents, setOriginConveyoEvents] = useState([]);
   const [conveyoTargetEvents, setConveyoTargetEvents] = useState([]);
+  const [orderyoBackendProcessEvents, setOrderyoBackendProcessEvents] = useState([]);
 
   const [currentEvent, setCurrentEvent] = useState();
   const [showEventLog, setShowEventLog] = useState(false);
@@ -111,6 +125,7 @@ function App() {
     setCurrentEvent(undefined); 
     setShowEventLog(false);
     setLogPosition(undefined);
+    setSelectedEventIndex(undefined);
   }
 
   const handleEnter = (e) => {
@@ -144,6 +159,21 @@ function App() {
     setPlatform(platform)
   }
 
+  const isTransmissionBackendProcess = (message) => {
+    return message.meta.event === "orderyo_backend_process" && message.type === "transmission"
+  }
+
+  const isAlimTalkBackendProcess = (message) => {
+    return message.meta.event === "orderyo_backend_process" && message.type === "alim_talk"
+  }
+
+  const handleEventClick = (value, index, position) => {
+    setCurrentEvent(value); 
+    setShowEventLog(true);
+    setLogPosition(position);
+    setSelectedEventIndex(value.eventIndex);
+  }
+
   useEffect(() => {
     document.addEventListener("keydown", (e) => {
       console.log(e)
@@ -155,13 +185,17 @@ function App() {
 
   useEffect(() => {
     if (events) {
-      const originConveyoEvents = events.filter((value) => ORIGIN_CONVEYO_EVENTS.includes(value.meta.event));
+      const originConveyoEvents = events.filter((value) => ORIGIN_CONVEYO_EVENTS.includes(value.meta.event) || isTransmissionBackendProcess(value));
       setOriginConveyoEvents(originConveyoEvents)
       setOrderSendEvent(originConveyoEvents[0])
       setConveyoTargetEvents(
         events.filter((value) => CONVEYO_TARGET_EVENTS.includes(value.meta.event))
       )
+      setOrderyoBackendProcessEvents(
+        events.filter((value) => value.meta.event === "orderyo_backend_process" && isAlimTalkBackendProcess(value))
+      )
     } else {
+      setOrderyoBackendProcessEvents([]);
       setOriginConveyoEvents([]);
       setConveyoTargetEvents([]);
       setOrderSendEvent(undefined);
@@ -208,18 +242,21 @@ function App() {
         </div>
         {events ? 
           <div className="componentsDisplay"> 
+            {orderSendEvent && orderSendEvent.meta.publisher === "orderyo" ? 
+              <div className="orderyoBackendProcessContainer">
+                <div className="alimTalkTitle">Alim Talk</div>
+                {orderyoBackendProcessEvents.map((value, index) => {
+                    return <AlimTalk event={value} selected={value.eventIndex === selectedEventIndex} handleClick={() => handleEventClick(value, index, "R")}/>
+                  })}
+              </div> : null
+            }
             <div className="component">
               Origin {`${orderSendEvent ? `(${orderSendEvent.meta.publisher})` : ""}`}
             </div>
 
             <div className="arrowContainer">
               {originConveyoEvents.map((value, index) => {
-                return <Arrow key={index} selected={index === selectedEventIndex && logPosition === "R"} event={value} handleClick={() => {
-                  setCurrentEvent(value); 
-                  setShowEventLog(true);
-                  setLogPosition("R");
-                  setSelectedEventIndex(index);
-                }}/>
+                return <Arrow key={index} selected={value.eventIndex === selectedEventIndex} event={value} handleClick={() => handleEventClick(value, index, "R")}/>
               })}
             </div>
 
@@ -229,12 +266,7 @@ function App() {
 
             <div className="arrowContainer">
               {conveyoTargetEvents.map((value, index) => {
-                return <Arrow key={index} selected={index === selectedEventIndex && logPosition === "L"} event={value} handleClick={() => {
-                  setCurrentEvent(value); 
-                  setShowEventLog(true);
-                  setLogPosition("L");
-                  setSelectedEventIndex(index);
-                }}/>
+                return <Arrow key={index} selected={value.eventIndex === selectedEventIndex} event={value} handleClick={() => handleEventClick(value, index, "L")}/>
               })}
             </div>
 

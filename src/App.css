@@ -222,3 +222,23 @@
   top: 10px;
   height: 30px;
 }
+
+.orderyoBackendProcessContainer {
+  position: fixed;
+  left: 3%;
+  width: 230px;
+  height: 300px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 4px 1px #b3b3b3;
+}
+
+.alimTalkTitle {
+  padding: 10px 0;
+  border-bottom: 1px solid #d6d6d6;
+}
+
+.alimTalkProcess {
+  font-size: 8px;
+  margin: 10px 0;
+  cursor: pointer;
+}
