@@ -68,6 +68,8 @@ function getTitle(event) {
     title = event.target_response.event
   } else if (event.meta.event === "orderyo_backend_process" && event.type === "transmission") {
     title = event.message
+  } else if (event.meta.event === "orderyo_backend_process" && event.type === "claim_refund") {
+    title = `${event.type}: ${event.status}`
   } else {
     title =  event.meta.event
   }
@@ -160,7 +162,7 @@ function App() {
   }
 
   const isTransmissionBackendProcess = (message) => {
-    return message.meta.event === "orderyo_backend_process" && message.type === "transmission"
+    return message.meta.event === "orderyo_backend_process" && ["transmission", "claim_refund"].includes(message.type)
   }
 
   const isAlimTalkBackendProcess = (message) => {
