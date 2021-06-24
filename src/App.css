@@ -15,7 +15,7 @@
     width: 10px;
   }
   100% {
-    width: 250px;
+    width: 350px;
   }
 }
 
@@ -136,12 +136,12 @@
 .arrow {
   background-color: black;
   height: 1px;
-  width: 250px;
+  width: 350px;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin: 18px 10px;
+  margin: 13px 10px;
   animation: expendArrows 0.5s;
 }
 
@@ -162,8 +162,7 @@
   position: absolute;
   font-size: 8px;
   bottom: 3px;
-  background: white;
-  width: 270px;
+  width: 400px;
 }
 
 .arrowLeft {
@@ -181,7 +180,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 270px;
+  min-width: 370px;
 }
 
 .onRight {
@@ -225,7 +224,8 @@
 
 .orderyoBackendProcessContainer {
   position: fixed;
-  left: 3%;
+  background-color: white;
+  left: 2%;
   width: 230px;
   height: 300px;
   border-radius: 5px;
